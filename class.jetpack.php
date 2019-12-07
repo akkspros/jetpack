@@ -7,6 +7,7 @@ use Automattic\Jetpack\Connection\REST_Connector as REST_Connector;
 use Automattic\Jetpack\Connection\XMLRPC_Connector as XMLRPC_Connector;
 use Automattic\Jetpack\Connection\Utils as Connection_Utils;
 use Automattic\Jetpack\Constants;
+use Automattic\Jetpack\JITM;
 use Automattic\Jetpack\Roles;
 use Automattic\Jetpack\Status;
 use Automattic\Jetpack\Sync\Functions;
@@ -753,6 +754,10 @@ class Jetpack {
 			 * Initialize tracking right after the user agrees to the terms of service.
 			 */
 			add_action( 'jetpack_agreed_to_terms_of_service', array( $tracking, 'init' ) );
+		}
+
+		if ( is_admin() ) {
+			( new JITM() )->register();
 		}
 	}
 
