@@ -10,7 +10,7 @@ import { Button, Placeholder } from '@wordpress/components';
  */
 import './editor.scss';
 
-export default function OpentableEdit( { setAttributes } ) {
+export default function OpentableEdit( { attributes: { rid }, setAttributes } ) {
 	const [ embedCode, setEmbedCode ] = useState();
 	const renderPlaceholder = () => {
 		const notices = null;
@@ -69,5 +69,5 @@ export default function OpentableEdit( { setAttributes } ) {
 		);
 	};
 
-	return renderPlaceholder();
+	return rid ? rid : renderPlaceholder();
 }

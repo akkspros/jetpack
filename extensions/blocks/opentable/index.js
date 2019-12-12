@@ -65,29 +65,29 @@ export const settings = {
 	/* @TODO Write the block editor output */
 	save: () => null,
 
-	example: {
-		attributes: {
-			rid: {
-				type: 'string',
-			},
-			type: {
-				type: 'string',
-			},
-			theme: {
-				type: 'string',
-			},
-			iframe: {
-				type: 'string',
-			},
-			domain: {
-				type: 'string',
-			},
-			lang: {
-				type: 'string',
-			},
-			newtab: {
-				type: 'string',
-			},
+	example: {},
+
+	attributes: {
+		rid: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+		},
+		theme: {
+			type: 'string',
+		},
+		iframe: {
+			type: 'string',
+		},
+		domain: {
+			type: 'string',
+		},
+		lang: {
+			type: 'string',
+		},
+		newtab: {
+			type: 'string',
 		},
 	},
 };
