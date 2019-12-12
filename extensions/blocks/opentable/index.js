@@ -44,7 +44,7 @@ export const settings = {
 			type: 'string',
 		},
 		iframe: {
-			type: 'string',
+			type: 'boolean',
 		},
 		domain: {
 			type: 'string',
@@ -53,7 +53,7 @@ export const settings = {
 			type: 'string',
 		},
 		newtab: {
-			type: 'string',
+			type: 'boolean',
 		},
 	},
 };

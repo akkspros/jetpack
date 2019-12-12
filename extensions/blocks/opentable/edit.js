@@ -1,8 +1,15 @@
 /**
  * External dependencies
  */
-import { BlockIcon } from '@wordpress/block-editor';
-import { Button, ExternalLink, Notice, Placeholder, TextareaControl } from '@wordpress/components';
+import { BlockIcon, InspectorControls } from '@wordpress/block-editor';
+import {
+	Button,
+	ExternalLink,
+	Notice,
+	PanelBody,
+	Placeholder,
+	TextareaControl,
+} from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { _x, __ } from '@wordpress/i18n';
 /**
@@ -68,10 +75,10 @@ export default function OpentableEdit( {
 				rid: searchParams.get( 'rid' ),
 				type: searchParams.get( 'type' ),
 				theme: searchParams.get( 'theme' ),
-				iframe: searchParams.get( 'iframe' ),
+				iframe: Boolean( searchParams.get( 'iframe' ) ),
 				domain: searchParams.get( 'domain' ),
 				lang: searchParams.get( 'lang' ),
-				newtab: searchParams.get( 'newtab' ),
+				newtab: Boolean( searchParams.get( 'newtab' ) ),
 			} );
 		};
 
@@ -108,22 +115,76 @@ export default function OpentableEdit( {
 		);
 	};
 
+	const inspectorControls = (
+		<InspectorControls>
+			<PanelBody title={ __( 'Styles', 'jetpack' ) }></PanelBody>
+			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
+				rid: <input type="text" value={ rid } />
+				<br />
+				theme:
+				<select
+					defaultValue={ theme }
+					onChange={ event => setAttributes( { theme: event.target.value } ) }
+				>
+					<option value="standard">Standard (224 x 301 pixels)</option>
+					<option value="tall">Tall (288 x 490 pixels)</option>
+					<option value="wide">Wide (840 x 350 pixels)</option>
+					<option value="button">Button (210 x 113 pixels)</option>
+				</select>
+				<br />
+				iframe:{' '}
+				<input
+					type="checkbox"
+					checked={ iframe }
+					onChange={ setAttributes( { iframe: ! iframe } ) }
+				/>
+				<br />
+				{ __( 'Language', 'jetpack' ) }:
+				<select
+					defaultValue={ lang }
+					onChange={ event => setAttributes( { lang: event.target.value } ) }
+				>
+					<option value="en-US">English-US</option>
+					<option value="fr-CA">Français-CA</option>
+					<option value="de-DE">Deutsch-DE</option>
+					<option value="es-MX">Español-MX</option>
+					<option value="ja-JP">日本語-JP</option>
+					<option value="nl-NL">Nederlands-NL</option>
+					<option value="it-IT">Italiano-IT</option>
+				</select>
+				<br />
+				newtab:{' '}
+				<input
+					type="checkbox"
+					checked={ newtab }
+					onChange={ setAttributes( { newtab: ! newtab } ) }
+				/>
+				<br />
+			</PanelBody>
+		</InspectorControls>
+	);
+
 	const renderPreview = () => (
 		<>
 			rid: { rid }
 			<br />
 			theme: { theme }
 			<br />
-			iframe: { iframe }
+			iframe: { iframe ? iframe.toString() : 'false' }
 			<br />
 			domain: { domain }
 			<br />
 			lang: { lang }
 			<br />
-			newtab: { newtab }
+			newtab: { newtab ? newtab.toString() : 'false' }
 			<br />
 		</>
 	);
 
-	return <div className={ className }>{ rid ? renderPreview() : renderPlaceholder() }</div>;
+	return (
+		<div className={ className }>
+			{ inspectorControls }
+			{ rid ? renderPreview() : renderPlaceholder() }
+		</div>
+	);
 }
