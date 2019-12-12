@@ -67,7 +67,30 @@ export const settings = {
 
 	example: {
 		attributes: {
-			// @TODO: Add default values for block attributes, for generating the block preview.
+			rid: {
+				type: 'array',
+			},
+			bgcolor: {
+				type: 'string',
+			},
+			titlecolor: {
+				type: 'string',
+			},
+			subtitlecolor: {
+				type: 'string',
+			},
+			btnbgimage: {
+				type: 'string',
+			},
+			otlink: {
+				type: 'string',
+			},
+			icon: {
+				type: 'string',
+			},
+			mode: {
+				type: 'string',
+			},
 		},
 	},
 };
