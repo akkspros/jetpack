@@ -85,7 +85,7 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes, cla
 			>
 				<form onSubmit={ parseEmbedCode }>
 					<TextareaControl
-						onChange={ event => setEmbedCode( event.target.value ) }
+						onChange={ value => setEmbedCode( value ) }
 						placeholder={ __( 'Paste your OpenTable embed code here…' ) }
 					></TextareaControl>
 					<Button isLarge type="submit">
