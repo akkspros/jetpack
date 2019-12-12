@@ -3,28 +3,47 @@
  */
 import { __, _x } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { Button, Placeholder } from '@wordpress/components';
+import { BlockIcon } from '@wordpress/block-editor';
+import { Button, Notice, Placeholder } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 import './editor.scss';
+import icon from './icon';
 
 export default function OpentableEdit( { attributes: { rid }, setAttributes } ) {
 	const [ embedCode, setEmbedCode ] = useState();
+	const [ notice, setNotice ] = useState();
 	const renderPlaceholder = () => {
-		const notices = null;
-		const preview = null;
+		const setErrorNotice = () =>
+			setNotice(
+				<>
+					<strong>{ __( 'We ran into an issue', 'jetpack' ) }</strong>
+					<br />
+					{ __(
+						'Please ensure this embed matches the one from your OpenTable account',
+						'jetpack'
+					) }
+				</>
+			);
 
 		const parseEmbedCode = event => {
 			if ( ! event ) {
+				setErrorNotice();
 				return;
 			}
 
 			event.preventDefault();
 
+			if ( ! embedCode ) {
+				setErrorNotice();
+				return;
+			}
+
 			const scriptTagAttributes = embedCode.match( /< *script[^>]*src *= *["']?([^"']*)/i );
-			if ( ! scriptTagAttributes[ 1 ] ) {
+			if ( ! scriptTagAttributes || ! scriptTagAttributes[ 1 ] ) {
+				setErrorNotice();
 				return;
 			}
 
@@ -36,6 +55,7 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes } ) 
 			}
 
 			if ( ! src.search ) {
+				setErrorNotice();
 				return;
 			}
 
@@ -55,9 +75,15 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes } ) 
 		return (
 			<Placeholder
 				label="OpenTable"
+				icon={ <BlockIcon icon={ icon } /> }
 				instructions={ __( 'Paste your embed code' ) }
-				notices={ notices }
-				preview={ preview }
+				notices={
+					notice && (
+						<Notice status="error" isDismissible={ false }>
+							{ notice }
+						</Notice>
+					)
+				}
 			>
 				<form onSubmit={ parseEmbedCode }>
 					<textarea name="test" onChange={ event => setEmbedCode( event.target.value ) }></textarea>
