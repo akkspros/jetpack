@@ -2,4 +2,8 @@
  * Editor styles for Opentable
  */
 
-.wp-block-jetpack-opentable { }
+.wp-block-jetpack-opentable {
+    .components-base-control__field {
+        margin-right: 8px;
+    }
+}

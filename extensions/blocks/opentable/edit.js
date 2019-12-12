@@ -1,18 +1,17 @@
 /**
  * External dependencies
  */
-import { __, _x } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { BlockIcon } from '@wordpress/block-editor';
-import { Button, Notice, Placeholder } from '@wordpress/components';
-
+import { Button, ExternalLink, Notice, Placeholder, TextareaControl } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { _x, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
 import './editor.scss';
 import icon from './icon';
 
-export default function OpentableEdit( { attributes: { rid }, setAttributes } ) {
+export default function OpentableEdit( { attributes: { rid }, setAttributes, className } ) {
 	const [ embedCode, setEmbedCode ] = useState();
 	const [ notice, setNotice ] = useState();
 	const renderPlaceholder = () => {
@@ -74,9 +73,8 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes } ) 
 
 		return (
 			<Placeholder
-				label="OpenTable"
+				label={ __( 'OpenTable Reservation', 'jetpack' ) }
 				icon={ <BlockIcon icon={ icon } /> }
-				instructions={ __( 'Paste your embed code' ) }
 				notices={
 					notice && (
 						<Notice status="error" isDismissible={ false }>
@@ -86,14 +84,25 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes } ) 
 				}
 			>
 				<form onSubmit={ parseEmbedCode }>
-					<textarea name="test" onChange={ event => setEmbedCode( event.target.value ) }></textarea>
+					<TextareaControl
+						onChange={ event => setEmbedCode( event.target.value ) }
+						placeholder={ __( 'Paste your OpenTable embed code here…' ) }
+					></TextareaControl>
 					<Button isLarge type="submit">
 						{ _x( 'Embed', 'button label', 'jetpack' ) }
 					</Button>
+					<p>
+						<ExternalLink
+							href="https://en.support.wordpress.com/widgets/open-table-widget/"
+							target="_blank"
+						>
+							{ __( 'Need help finding your embed code?' ) }
+						</ExternalLink>
+					</p>
 				</form>
 			</Placeholder>
 		);
 	};
 
-	return rid ? rid : renderPlaceholder();
+	return <div className={ className }>{ rid ? rid : renderPlaceholder() }</div>;
 }
