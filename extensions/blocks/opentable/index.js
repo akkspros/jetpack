@@ -68,27 +68,24 @@ export const settings = {
 	example: {
 		attributes: {
 			rid: {
-				type: 'array',
-			},
-			bgcolor: {
 				type: 'string',
 			},
-			titlecolor: {
+			type: {
 				type: 'string',
 			},
-			subtitlecolor: {
+			theme: {
 				type: 'string',
 			},
-			btnbgimage: {
+			iframe: {
 				type: 'string',
 			},
-			otlink: {
+			domain: {
 				type: 'string',
 			},
-			icon: {
+			lang: {
 				type: 'string',
 			},
-			mode: {
+			newtab: {
 				type: 'string',
 			},
 		},
