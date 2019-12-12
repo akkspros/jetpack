@@ -11,7 +11,11 @@ import { _x, __ } from '@wordpress/i18n';
 import './editor.scss';
 import icon from './icon';
 
-export default function OpentableEdit( { attributes: { rid }, setAttributes, className } ) {
+export default function OpentableEdit( {
+	attributes: { rid, theme, iframe, domain, lang, newtab },
+	setAttributes,
+	className,
+} ) {
 	const [ embedCode, setEmbedCode ] = useState();
 	const [ notice, setNotice ] = useState();
 	const renderPlaceholder = () => {
@@ -104,5 +108,22 @@ export default function OpentableEdit( { attributes: { rid }, setAttributes, cla
 		);
 	};
 
-	return <div className={ className }>{ rid ? rid : renderPlaceholder() }</div>;
+	const renderPreview = () => (
+		<>
+			rid: { rid }
+			<br />
+			theme: { theme }
+			<br />
+			iframe: { iframe }
+			<br />
+			domain: { domain }
+			<br />
+			lang: { lang }
+			<br />
+			newtab: { newtab }
+			<br />
+		</>
+	);
+
+	return <div className={ className }>{ rid ? renderPreview() : renderPlaceholder() }</div>;
 }
