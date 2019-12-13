@@ -7,10 +7,48 @@
  * @package Jetpack
  */
 
-jetpack_register_block(
-	'jetpack/opentable',
-	array( 'render_callback' => 'jetpack_opentable_block_load_assets' )
-);
+if ( jetpack_opentable_block_is_available() ) {
+	jetpack_register_block(
+		'jetpack/opentable',
+		array( 'render_callback' => 'jetpack_opentable_block_load_assets' )
+	);
+} else {
+	Jetpack_Gutenberg::set_extension_unavailable(
+		'jetpack/opentable',
+		'missing_plan',
+		array(
+			'required_feature' => 'opentable',
+			'required_plan'    => ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ? 'value_bundle' : 'jetpack_premium',
+		)
+	);
+}
+
+/**
+ * Is the OpenTable block available on a given site
+ *
+ * @return bool True if the block is available, false otherwise.
+ */
+function jetpack_opentable_block_is_available() {
+	// For WPCOM sites.
+	if ( defined( 'IS_WPCOM' ) && IS_WPCOM && function_exists( 'has_any_blog_stickers' ) ) {
+		$site_id = jetpack_get_blog_id();
+		return has_any_blog_stickers( array( 'premium-plan', 'business-plan', 'ecommerce-plan' ), $site_id );
+	}
+	// For all Jetpack sites.
+	return Jetpack::is_active() && Jetpack_Plan::supports( 'opentable' );
+}
+
+/**
+ * Get the current blog ID
+ *
+ * @return int The current blog ID
+ */
+function jetpack_opentable_block_get_blog_id() {
+	if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
+		return get_current_blog_id();
+	}
+	return Jetpack_Options::get_option( 'id' );
+}
 
 /**
  * Opentable block registration/dependency declaration.
