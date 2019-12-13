@@ -176,7 +176,9 @@ export default function OpentableEdit( {
 			<div className={ `${ className }-overlay` }></div>
 			<iframe
 				title={ `Open Table Preview ${ clientId }` }
-				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=standard&theme=${ theme }&overlay=false&domain=${ domain }&lang=${ lang }&newtab=${ newtab }&disablega=true` }
+				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
+					'button' === theme ? 'button' : 'standard'
+				}&theme=${ theme }&overlay=false&domain=${ domain }&lang=${ lang }&newtab=${ newtab }&disablega=true` }
 			/>
 		</>
 	);
