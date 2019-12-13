@@ -1,6 +1,11 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
 import { BlockIcon, InspectorControls } from '@wordpress/block-editor';
 import {
 	Button,
@@ -15,7 +20,7 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { _x, __ } from '@wordpress/i18n';
-import classNames from 'classnames';
+import { ENTER, SPACE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -24,7 +29,7 @@ import './editor.scss';
 import icon from './icon';
 
 export default function OpentableEdit( {
-	attributes: { rid, theme, iframe, domain, lang, newtab },
+	attributes: { rid, style, iframe, domain, lang, newtab },
 	setAttributes,
 	className,
 	clientId,
@@ -73,35 +78,39 @@ export default function OpentableEdit( {
 		}
 
 		const searchParams = new URLSearchParams( src.search );
+		let styleSetting = searchParams.get( 'theme' );
+		if ( searchParams.get( 'type' ) === 'button' ) {
+			styleSetting = searchParams.get( 'type' );
+		}
+
 		setAttributes( {
 			rid: searchParams.get( 'rid' ),
-			type: searchParams.get( 'type' ),
-			theme: searchParams.get( 'theme' ),
 			iframe: Boolean( searchParams.get( 'iframe' ) ),
 			domain: searchParams.get( 'domain' ),
 			lang: searchParams.get( 'lang' ),
 			newtab: Boolean( searchParams.get( 'newtab' ) ),
+			style: styleSetting,
 		} );
 	};
 
 	const optionValues = options => options.map( option => option.value );
 
-	const themeOptions = [
-		{ value: 'standard', label: __( 'Standard (224 x 301 pixels)' ) },
-		{ value: 'tall', label: __( 'Tall (288 x 490 pixels)' ) },
-		{ value: 'wide', label: __( 'Wide (840 x 350 pixels)' ) },
-		{ value: 'button', label: __( 'Button (210 x 113 pixels)' ) },
+	const styleOptions = [
+		{ value: 'standard', label: __( 'Standard (224 x 301 pixels)', 'jetpack' ) },
+		{ value: 'tall', label: __( 'Tall (288 x 490 pixels)', 'jetpack' ) },
+		{ value: 'wide', label: __( 'Wide (840 x 350 pixels)', 'jetpack' ) },
+		{ value: 'button', label: __( 'Button (210 x 113 pixels)', 'jetpack' ) },
 	];
-	const themeValues = optionValues( themeOptions );
+	const styleValues = optionValues( styleOptions );
 
 	const languageOptions = [
-		{ value: 'en-US', label: __( 'English-US' ) },
-		{ value: 'fr-CA', label: __( 'Français-CA' ) },
-		{ value: 'de-DE', label: __( 'Deutsch-DE' ) },
-		{ value: 'es-MX', label: __( 'Español-MX' ) },
-		{ value: 'ja-JP', label: __( '日本語-JP' ) },
-		{ value: 'nl-NL', label: __( 'Nederlands-NL' ) },
-		{ value: 'it-IT', label: __( 'Italiano-IT' ) },
+		{ value: 'en-US', label: __( 'English-US', 'jetpack' ) },
+		{ value: 'fr-CA', label: __( 'Français-CA', 'jetpack' ) },
+		{ value: 'de-DE', label: __( 'Deutsch-DE', 'jetpack' ) },
+		{ value: 'es-MX', label: __( 'Español-MX', 'jetpack' ) },
+		{ value: 'ja-JP', label: __( '日本語-JP', 'jetpack' ) },
+		{ value: 'nl-NL', label: __( 'Nederlands-NL', 'jetpack' ) },
+		{ value: 'it-IT', label: __( 'Italiano-IT', 'jetpack' ) },
 	];
 	const languageValues = optionValues( languageOptions );
 
@@ -127,21 +136,45 @@ export default function OpentableEdit( {
 		</form>
 	);
 
+	const updateStyle = newStyle => {
+		setAttributes( { style: newStyle } );
+	};
+
 	const inspectorControls = (
 		<InspectorControls>
-			<PanelBody title={ __( 'Styles', 'jetpack' ) }></PanelBody>
+			<PanelBody title={ __( 'Styles', 'jetpack' ) }>
+				<div className="block-editor-block-styles">
+					{ styleOptions.map( styleOption => {
+						return (
+							<div
+								key={ styleOption.value }
+								className={ classnames( 'block-editor-block-styles__item', {
+									'is-active': styleOption.value === style,
+								} ) }
+								onClick={ () => updateStyle( styleOption.value ) }
+								onKeyDown={ event => {
+									if ( ENTER === event.keyCode || SPACE === event.keyCode ) {
+										event.preventDefault();
+										updateStyle( styleOption.value );
+									}
+								} }
+								role="button"
+								tabIndex="0"
+								aria-label={ styleOption.label }
+							>
+								<div className="block-editor-block-styles__item-preview">TODO</div>
+								<div className="block-editor-block-styles__item-label">{ styleOption.label }</div>
+							</div>
+						);
+					} ) }
+				</div>
+			</PanelBody>
 			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
 				<TextControl
 					label={ __( 'Restaurant ID' ) }
 					type="text"
 					value={ rid }
 					onChange={ newRid => setAttributes( { rid: newRid } ) }
-				/>
-				<SelectControl
-					label={ __( 'Widget Type' ) }
-					value={ theme }
-					onChange={ newTheme => setAttributes( { theme: newTheme } ) }
-					options={ themeOptions }
 				/>
 				<ToggleControl
 					label={ __( 'Load the widget in an iFrame (Recommended)' ) }
@@ -188,16 +221,18 @@ export default function OpentableEdit( {
 			<iframe
 				title={ `Open Table Preview ${ clientId }` }
 				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
-					'button' === theme ? 'button' : 'standard'
-				}&theme=${ theme }&overlay=false&domain=${ domain }&lang=${
+					'button' === style ? 'button' : 'standard'
+				}&theme=${
+					'button' === style ? 'standard' : style
+				}&overlay=false&domain=${ domain }&lang=${
 					lang && languageValues.includes( lang ) ? lang : 'en-US'
 				}&newtab=${ newtab }&disablega=true` }
 			/>
 		</>
 	);
 
-	const editClasses = classNames( className, {
-		[ `${ className }-theme-${ theme }` ]: rid && themeValues.includes( theme ),
+	const editClasses = classnames( className, {
+		[ `${ className }-theme-${ style }` ]: rid && styleValues.includes( style ),
 	} );
 
 	return (

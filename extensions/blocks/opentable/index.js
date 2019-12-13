@@ -39,10 +39,7 @@ export const settings = {
 		rid: {
 			type: 'string',
 		},
-		type: {
-			type: 'string',
-		},
-		theme: {
+		style: {
 			type: 'string',
 		},
 		iframe: {
