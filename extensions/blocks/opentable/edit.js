@@ -120,12 +120,15 @@ export default function OpentableEdit( {
 		);
 	};
 
+	const optionValues = options => options.map( option => option.value );
+
 	const themeOptions = [
 		{ value: 'standard', label: __( 'Standard (224 x 301 pixels)' ) },
 		{ value: 'tall', label: __( 'Tall (288 x 490 pixels)' ) },
 		{ value: 'wide', label: __( 'Wide (840 x 350 pixels)' ) },
 		{ value: 'button', label: __( 'Button (210 x 113 pixels)' ) },
 	];
+	const themeValues = optionValues( themeOptions );
 
 	const languageOptions = [
 		{ value: 'en-US', label: __( 'English-US' ) },
@@ -136,6 +139,7 @@ export default function OpentableEdit( {
 		{ value: 'nl-NL', label: __( 'Nederlands-NL' ) },
 		{ value: 'it-IT', label: __( 'Italiano-IT' ) },
 	];
+	const languageValues = optionValues( languageOptions );
 
 	const inspectorControls = () => (
 		<InspectorControls>
@@ -180,14 +184,15 @@ export default function OpentableEdit( {
 				title={ `Open Table Preview ${ clientId }` }
 				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
 					'button' === theme ? 'button' : 'standard'
-				}&theme=${ theme }&overlay=false&domain=${ domain }&lang=${ lang }&newtab=${ newtab }&disablega=true` }
+				}&theme=${ theme }&overlay=false&domain=${ domain }&lang=${
+					lang && languageValues.includes( lang ) ? lang : 'en-US'
+				}&newtab=${ newtab }&disablega=true` }
 			/>
 		</>
 	);
 
 	const editClasses = classNames( className, {
-		[ `${ className }-theme-${ theme }` ]:
-			rid && [ 'tall', 'wide', 'button', 'standard' ].includes( theme ),
+		[ `${ className }-theme-${ theme }` ]: rid && themeValues.includes( theme ),
 	} );
 
 	return (
