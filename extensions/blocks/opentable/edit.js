@@ -125,7 +125,7 @@ export default function OpentableEdit( {
 				<input
 					type="text"
 					value={ rid }
-					onBlur={ event => setAttributes( { rid: event.target.value } ) }
+					onChange={ event => setAttributes( { rid: event.target.value } ) }
 				/>
 				<br />
 				theme:
