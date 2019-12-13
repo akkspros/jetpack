@@ -116,15 +116,17 @@ export default function OpentableEdit( {
 
 	const embedCodeForm = (
 		<form onSubmit={ parseEmbedCode }>
-			<TextareaControl
-				onChange={ value => setEmbedCode( value ) }
-				placeholder={ __( 'Paste your OpenTable embed code here…' ) }
-			>
-				{ embedCode }
-			</TextareaControl>
-			<Button isLarge type="submit">
-				{ _x( 'Embed', 'button label', 'jetpack' ) }
-			</Button>
+			<fieldset>
+				<TextareaControl
+					onChange={ value => setEmbedCode( value ) }
+					placeholder={ __( 'Paste your OpenTable embed code here…' ) }
+				>
+					{ embedCode }
+				</TextareaControl>
+				<Button isLarge type="submit">
+					{ _x( 'Embed', 'button label', 'jetpack' ) }
+				</Button>
+			</fieldset>
 			<p>
 				<ExternalLink
 					href="https://en.support.wordpress.com/widgets/open-table-widget/"
