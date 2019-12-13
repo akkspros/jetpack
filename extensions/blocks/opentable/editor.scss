@@ -34,5 +34,15 @@
 
 	&-theme-button {
 		height: 113px;
-	}
+    }
+}
+
+.block-editor-block-styles__item.is-opentable {
+    padding-top: 6px;
+}
+
+.block-editor-block-styles__item-preview {
+    height: 100px;
+    margin-top: 0;
+    padding-top: 0;
 }

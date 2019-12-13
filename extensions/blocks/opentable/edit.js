@@ -140,6 +140,25 @@ export default function OpentableEdit( {
 		setAttributes( { style: newStyle } );
 	};
 
+	const blockPreview = styleOveride => {
+		const computedStyle = styleOveride ? styleOveride : style;
+		return (
+			<>
+				<div className={ `${ className }-overlay` }></div>
+				<iframe
+					title={ `Open Table Preview ${ clientId }` }
+					src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
+						'button' === computedStyle ? 'button' : 'standard'
+					}&theme=${
+						'button' === computedStyle ? 'standard' : computedStyle
+					}&overlay=false&domain=${ domain }&lang=${
+						lang && languageValues.includes( lang ) ? lang : 'en-US'
+					}&newtab=${ newtab }&disablega=true` }
+				/>
+			</>
+		);
+	};
+
 	const inspectorControls = (
 		<InspectorControls>
 			<PanelBody title={ __( 'Styles', 'jetpack' ) }>
@@ -148,7 +167,7 @@ export default function OpentableEdit( {
 						return (
 							<div
 								key={ styleOption.value }
-								className={ classnames( 'block-editor-block-styles__item', {
+								className={ classnames( 'block-editor-block-styles__item is-opentable', {
 									'is-active': styleOption.value === style,
 								} ) }
 								onClick={ () => updateStyle( styleOption.value ) }
@@ -162,7 +181,9 @@ export default function OpentableEdit( {
 								tabIndex="0"
 								aria-label={ styleOption.label }
 							>
-								<div className="block-editor-block-styles__item-preview">TODO</div>
+								<div className="block-editor-block-styles__item-preview is-opentable">
+									{ blockPreview( styleOption.value ) }
+								</div>
 								<div className="block-editor-block-styles__item-label">{ styleOption.label }</div>
 							</div>
 						);
@@ -215,22 +236,6 @@ export default function OpentableEdit( {
 		</Placeholder>
 	);
 
-	const blockPreview = (
-		<>
-			<div className={ `${ className }-overlay` }></div>
-			<iframe
-				title={ `Open Table Preview ${ clientId }` }
-				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
-					'button' === style ? 'button' : 'standard'
-				}&theme=${
-					'button' === style ? 'standard' : style
-				}&overlay=false&domain=${ domain }&lang=${
-					lang && languageValues.includes( lang ) ? lang : 'en-US'
-				}&newtab=${ newtab }&disablega=true` }
-			/>
-		</>
-	);
-
 	const editClasses = classnames( className, {
 		[ `${ className }-theme-${ style }` ]: rid && styleValues.includes( style ),
 	} );
@@ -238,7 +243,7 @@ export default function OpentableEdit( {
 	return (
 		<div className={ editClasses }>
 			{ rid && inspectorControls }
-			{ rid ? blockPreview : blockPlaceholder }
+			{ rid ? blockPreview() : blockPlaceholder }
 		</div>
 	);
 }
