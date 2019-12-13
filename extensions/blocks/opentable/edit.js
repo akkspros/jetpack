@@ -6,17 +6,18 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { BlockIcon, InspectorControls } from '@wordpress/block-editor';
+import { BlockControls, BlockIcon, InspectorControls } from '@wordpress/block-editor';
 import {
 	Button,
 	ExternalLink,
 	Notice,
 	PanelBody,
 	Placeholder,
+	SelectControl,
 	TextareaControl,
 	TextControl,
 	ToggleControl,
-	SelectControl,
+	Toolbar,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { _x, __ } from '@wordpress/i18n';
@@ -116,17 +117,15 @@ export default function OpentableEdit( {
 
 	const embedCodeForm = (
 		<form onSubmit={ parseEmbedCode }>
-			<fieldset>
-				<TextareaControl
-					onChange={ value => setEmbedCode( value ) }
-					placeholder={ __( 'Paste your OpenTable embed code here…' ) }
-				>
-					{ embedCode }
-				</TextareaControl>
-				<Button isLarge type="submit">
-					{ _x( 'Embed', 'button label', 'jetpack' ) }
-				</Button>
-			</fieldset>
+			<TextareaControl
+				onChange={ value => setEmbedCode( value ) }
+				placeholder={ __( 'Paste your OpenTable embed code here…' ) }
+			>
+				{ embedCode }
+			</TextareaControl>
+			<Button isLarge type="submit">
+				{ _x( 'Embed', 'button label', 'jetpack' ) }
+			</Button>
 			<p>
 				<ExternalLink
 					href="https://en.support.wordpress.com/widgets/open-table-widget/"
@@ -160,6 +159,23 @@ export default function OpentableEdit( {
 			</>
 		);
 	};
+
+	const blockControls = (
+		<BlockControls>
+			{ rid && (
+				<Toolbar
+					isCollapsed={ true }
+					icon="edit"
+					label={ __( 'Type' ) }
+					controls={ styleOptions.map( styleOption => ( {
+						title: styleOption.label,
+						isActive: styleOption.value === style,
+						onClick: () => updateStyle( styleOption.value ),
+					} ) ) }
+				/>
+			) }
+		</BlockControls>
+	);
 
 	const inspectorControls = (
 		<InspectorControls>
@@ -244,7 +260,12 @@ export default function OpentableEdit( {
 
 	return (
 		<div className={ editClasses }>
-			{ rid && inspectorControls }
+			{ rid && (
+				<>
+					{ inspectorControls }
+					{ blockControls }
+				</>
+			) }
 			{ rid ? blockPreview() : blockPlaceholder }
 		</div>
 	);
