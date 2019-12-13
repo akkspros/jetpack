@@ -9,6 +9,9 @@ import {
 	PanelBody,
 	Placeholder,
 	TextareaControl,
+	TextControl,
+	ToggleControl,
+	SelectControl,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { _x, __ } from '@wordpress/i18n';
@@ -117,56 +120,55 @@ export default function OpentableEdit( {
 		);
 	};
 
+	const themeOptions = [
+		{ value: 'standard', label: __( 'Standard (224 x 301 pixels)' ) },
+		{ value: 'tall', label: __( 'Tall (288 x 490 pixels)' ) },
+		{ value: 'wide', label: __( 'Wide (840 x 350 pixels)' ) },
+		{ value: 'button', label: __( 'Button (210 x 113 pixels)' ) },
+	];
+
+	const languageOptions = [
+		{ value: 'en-US', label: __( 'English-US' ) },
+		{ value: 'fr-CA', label: __( 'Français-CA' ) },
+		{ value: 'de-DE', label: __( 'Deutsch-DE' ) },
+		{ value: 'es-MX', label: __( 'Español-MX' ) },
+		{ value: 'ja-JP', label: __( '日本語-JP' ) },
+		{ value: 'nl-NL', label: __( 'Nederlands-NL' ) },
+		{ value: 'it-IT', label: __( 'Italiano-IT' ) },
+	];
+
 	const inspectorControls = () => (
 		<InspectorControls>
 			<PanelBody title={ __( 'Styles', 'jetpack' ) }></PanelBody>
 			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
-				rid:{' '}
-				<input
+				<TextControl
+					label={ __( 'Restaurant ID' ) }
 					type="text"
 					value={ rid }
-					onChange={ event => setAttributes( { rid: event.target.value } ) }
+					onChange={ newRid => setAttributes( { rid: newRid } ) }
 				/>
-				<br />
-				theme:
-				<select
-					defaultValue={ theme }
-					onBlur={ event => setAttributes( { theme: event.target.value } ) }
-				>
-					<option value="standard">Standard (224 x 301 pixels)</option>
-					<option value="tall">Tall (288 x 490 pixels)</option>
-					<option value="wide">Wide (840 x 350 pixels)</option>
-					<option value="button">Button (210 x 113 pixels)</option>
-				</select>
-				<br />
-				iframe:{' '}
-				<input
-					type="checkbox"
+				<SelectControl
+					label={ __( 'Widget Type' ) }
+					value={ theme }
+					onChange={ newTheme => setAttributes( { theme: newTheme } ) }
+					options={ themeOptions }
+				/>
+				<ToggleControl
+					label={ __( 'Load the widget in an iFrame (Recommended)' ) }
 					checked={ iframe }
-					onBlur={ () => setAttributes( { iframe: ! iframe } ) }
+					onChange={ () => setAttributes( { iframe: ! iframe } ) }
 				/>
-				<br />
-				{ __( 'Language', 'jetpack' ) }:
-				<select
-					defaultValue={ lang }
-					onBlur={ event => setAttributes( { lang: event.target.value } ) }
-				>
-					<option value="en-US">English-US</option>
-					<option value="fr-CA">Français-CA</option>
-					<option value="de-DE">Deutsch-DE</option>
-					<option value="es-MX">Español-MX</option>
-					<option value="ja-JP">日本語-JP</option>
-					<option value="nl-NL">Nederlands-NL</option>
-					<option value="it-IT">Italiano-IT</option>
-				</select>
-				<br />
-				newtab:{' '}
-				<input
-					type="checkbox"
+				<SelectControl
+					label={ __( 'Language', 'jetpack' ) }
+					value={ lang }
+					onChange={ newLang => setAttributes( { lang: newLang } ) }
+					options={ languageOptions }
+				/>
+				<ToggleControl
+					label={ __( 'Open in a new window' ) }
 					checked={ newtab }
-					onBlur={ () => setAttributes( { newtab: ! newtab } ) }
+					onChange={ () => setAttributes( { newtab: ! newtab } ) }
 				/>
-				<br />
 			</PanelBody>
 		</InspectorControls>
 	);
