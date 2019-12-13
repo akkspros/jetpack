@@ -12,6 +12,8 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { _x, __ } from '@wordpress/i18n';
+import classNames from 'classnames';
+
 /**
  * Internal dependencies
  */
@@ -22,6 +24,7 @@ export default function OpentableEdit( {
 	attributes: { rid, theme, iframe, domain, lang, newtab },
 	setAttributes,
 	className,
+	clientId,
 } ) {
 	const [ embedCode, setEmbedCode ] = useState();
 	const [ notice, setNotice ] = useState();
@@ -70,7 +73,6 @@ export default function OpentableEdit( {
 			}
 
 			const searchParams = new URLSearchParams( src.search );
-
 			setAttributes( {
 				rid: searchParams.get( 'rid' ),
 				type: searchParams.get( 'type' ),
@@ -115,16 +117,21 @@ export default function OpentableEdit( {
 		);
 	};
 
-	const inspectorControls = (
+	const inspectorControls = () => (
 		<InspectorControls>
 			<PanelBody title={ __( 'Styles', 'jetpack' ) }></PanelBody>
 			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
-				rid: <input type="text" value={ rid } />
+				rid:{' '}
+				<input
+					type="text"
+					value={ rid }
+					onBlur={ event => setAttributes( { rid: event.target.value } ) }
+				/>
 				<br />
 				theme:
 				<select
 					defaultValue={ theme }
-					onChange={ event => setAttributes( { theme: event.target.value } ) }
+					onBlur={ event => setAttributes( { theme: event.target.value } ) }
 				>
 					<option value="standard">Standard (224 x 301 pixels)</option>
 					<option value="tall">Tall (288 x 490 pixels)</option>
@@ -136,13 +143,13 @@ export default function OpentableEdit( {
 				<input
 					type="checkbox"
 					checked={ iframe }
-					onChange={ setAttributes( { iframe: ! iframe } ) }
+					onBlur={ () => setAttributes( { iframe: ! iframe } ) }
 				/>
 				<br />
 				{ __( 'Language', 'jetpack' ) }:
 				<select
 					defaultValue={ lang }
-					onChange={ event => setAttributes( { lang: event.target.value } ) }
+					onBlur={ event => setAttributes( { lang: event.target.value } ) }
 				>
 					<option value="en-US">English-US</option>
 					<option value="fr-CA">Français-CA</option>
@@ -157,7 +164,7 @@ export default function OpentableEdit( {
 				<input
 					type="checkbox"
 					checked={ newtab }
-					onChange={ setAttributes( { newtab: ! newtab } ) }
+					onBlur={ () => setAttributes( { newtab: ! newtab } ) }
 				/>
 				<br />
 			</PanelBody>
@@ -166,25 +173,23 @@ export default function OpentableEdit( {
 
 	const renderPreview = () => (
 		<>
-			rid: { rid }
-			<br />
-			theme: { theme }
-			<br />
-			iframe: { iframe ? iframe.toString() : 'false' }
-			<br />
-			domain: { domain }
-			<br />
-			lang: { lang }
-			<br />
-			newtab: { newtab ? newtab.toString() : 'false' }
-			<br />
+			<div className={ `${ className }-overlay` }></div>
+			<iframe
+				title={ `Open Table Preview ${ clientId }` }
+				src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=standard&theme=${ theme }&overlay=false&domain=${ domain }&lang=${ lang }&newtab=${ newtab }&disablega=true` }
+			/>
 		</>
 	);
 
+	const editClasses = classNames( className, {
+		[ `${ className }-theme-${ theme }` ]:
+			rid && [ 'tall', 'wide', 'button', 'standard' ].includes( theme ),
+	} );
+
 	return (
-		<div className={ className }>
-			{ inspectorControls }
-			{ rid ? renderPreview() : renderPlaceholder() }
+		<div className={ editClasses }>
+			{ rid && inspectorControls() }
+			{ rid ? inspectorControls() && renderPreview() : renderPlaceholder() }
 		</div>
 	);
 }

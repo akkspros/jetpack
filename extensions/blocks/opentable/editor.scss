@@ -6,4 +6,33 @@
     .components-base-control__field {
         margin-right: 8px;
     }
+
+	position: relative;
+
+	iframe {
+		height:100%;
+		width: 100%;
+	}
+
+	&-overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	&-theme-standard {
+		height: 301px;
+	}
+
+	&-theme-tall {
+		height: 490px;
+	}
+
+	&-theme-wide {
+		height: 350px;
+	}
+
+	&-theme-button {
+		height: 113px;
+	}
 }

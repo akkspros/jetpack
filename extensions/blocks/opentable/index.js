@@ -33,6 +33,8 @@ export const settings = {
 
 	edit,
 
+	save: () => null,
+
 	attributes: {
 		rid: {
 			type: 'string',
