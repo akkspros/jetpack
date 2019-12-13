@@ -31,93 +31,57 @@ export default function OpentableEdit( {
 } ) {
 	const [ embedCode, setEmbedCode ] = useState();
 	const [ notice, setNotice ] = useState();
-	const renderPlaceholder = () => {
-		const setErrorNotice = () =>
-			setNotice(
-				<>
-					<strong>{ __( 'We ran into an issue', 'jetpack' ) }</strong>
-					<br />
-					{ __(
-						'Please ensure this embed matches the one from your OpenTable account',
-						'jetpack'
-					) }
-				</>
-			);
 
-		const parseEmbedCode = event => {
-			if ( ! event ) {
-				setErrorNotice();
-				return;
-			}
-
-			event.preventDefault();
-
-			if ( ! embedCode ) {
-				setErrorNotice();
-				return;
-			}
-
-			const scriptTagAttributes = embedCode.match( /< *script[^>]*src *= *["']?([^"']*)/i );
-			if ( ! scriptTagAttributes || ! scriptTagAttributes[ 1 ] ) {
-				setErrorNotice();
-				return;
-			}
-
-			let src = '';
-			if ( scriptTagAttributes[ 1 ].indexOf( 'http' ) === 0 ) {
-				src = new URL( scriptTagAttributes[ 1 ] );
-			} else {
-				src = new URL( 'http:' + scriptTagAttributes[ 1 ] );
-			}
-
-			if ( ! src.search ) {
-				setErrorNotice();
-				return;
-			}
-
-			const searchParams = new URLSearchParams( src.search );
-			setAttributes( {
-				rid: searchParams.get( 'rid' ),
-				type: searchParams.get( 'type' ),
-				theme: searchParams.get( 'theme' ),
-				iframe: Boolean( searchParams.get( 'iframe' ) ),
-				domain: searchParams.get( 'domain' ),
-				lang: searchParams.get( 'lang' ),
-				newtab: Boolean( searchParams.get( 'newtab' ) ),
-			} );
-		};
-
-		return (
-			<Placeholder
-				label={ __( 'OpenTable Reservation', 'jetpack' ) }
-				icon={ <BlockIcon icon={ icon } /> }
-				notices={
-					notice && (
-						<Notice status="error" isDismissible={ false }>
-							{ notice }
-						</Notice>
-					)
-				}
-			>
-				<form onSubmit={ parseEmbedCode }>
-					<TextareaControl
-						onChange={ value => setEmbedCode( value ) }
-						placeholder={ __( 'Paste your OpenTable embed code here…' ) }
-					></TextareaControl>
-					<Button isLarge type="submit">
-						{ _x( 'Embed', 'button label', 'jetpack' ) }
-					</Button>
-					<p>
-						<ExternalLink
-							href="https://en.support.wordpress.com/widgets/open-table-widget/"
-							target="_blank"
-						>
-							{ __( 'Need help finding your embed code?' ) }
-						</ExternalLink>
-					</p>
-				</form>
-			</Placeholder>
+	const setErrorNotice = () =>
+		setNotice(
+			<>
+				<strong>{ __( 'We ran into an issue', 'jetpack' ) }</strong>
+				<br />
+				{ __( 'Please ensure this embed matches the one from your OpenTable account', 'jetpack' ) }
+			</>
 		);
+
+	const parseEmbedCode = event => {
+		if ( ! event ) {
+			setErrorNotice();
+			return;
+		}
+
+		event.preventDefault();
+
+		if ( ! embedCode ) {
+			setErrorNotice();
+			return;
+		}
+
+		const scriptTagAttributes = embedCode.match( /< *script[^>]*src *= *["']?([^"']*)/i );
+		if ( ! scriptTagAttributes || ! scriptTagAttributes[ 1 ] ) {
+			setErrorNotice();
+			return;
+		}
+
+		let src = '';
+		if ( scriptTagAttributes[ 1 ].indexOf( 'http' ) === 0 ) {
+			src = new URL( scriptTagAttributes[ 1 ] );
+		} else {
+			src = new URL( 'http:' + scriptTagAttributes[ 1 ] );
+		}
+
+		if ( ! src.search ) {
+			setErrorNotice();
+			return;
+		}
+
+		const searchParams = new URLSearchParams( src.search );
+		setAttributes( {
+			rid: searchParams.get( 'rid' ),
+			type: searchParams.get( 'type' ),
+			theme: searchParams.get( 'theme' ),
+			iframe: Boolean( searchParams.get( 'iframe' ) ),
+			domain: searchParams.get( 'domain' ),
+			lang: searchParams.get( 'lang' ),
+			newtab: Boolean( searchParams.get( 'newtab' ) ),
+		} );
 	};
 
 	const optionValues = options => options.map( option => option.value );
@@ -141,7 +105,29 @@ export default function OpentableEdit( {
 	];
 	const languageValues = optionValues( languageOptions );
 
-	const inspectorControls = () => (
+	const embedCodeForm = (
+		<form onSubmit={ parseEmbedCode }>
+			<TextareaControl
+				onChange={ value => setEmbedCode( value ) }
+				placeholder={ __( 'Paste your OpenTable embed code here…' ) }
+			>
+				{ embedCode }
+			</TextareaControl>
+			<Button isLarge type="submit">
+				{ _x( 'Embed', 'button label', 'jetpack' ) }
+			</Button>
+			<p>
+				<ExternalLink
+					href="https://en.support.wordpress.com/widgets/open-table-widget/"
+					target="_blank"
+				>
+					{ __( 'Need help finding your embed code?' ) }
+				</ExternalLink>
+			</p>
+		</form>
+	);
+
+	const inspectorControls = (
 		<InspectorControls>
 			<PanelBody title={ __( 'Styles', 'jetpack' ) }></PanelBody>
 			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
@@ -174,10 +160,29 @@ export default function OpentableEdit( {
 					onChange={ () => setAttributes( { newtab: ! newtab } ) }
 				/>
 			</PanelBody>
+			<PanelBody title={ __( 'Embed code', 'jetpack' ) } initialOpen={ false }>
+				{ embedCodeForm }
+			</PanelBody>
 		</InspectorControls>
 	);
 
-	const renderPreview = () => (
+	const blockPlaceholder = (
+		<Placeholder
+			label={ __( 'OpenTable Reservation', 'jetpack' ) }
+			icon={ <BlockIcon icon={ icon } /> }
+			notices={
+				notice && (
+					<Notice status="error" isDismissible={ false }>
+						{ notice }
+					</Notice>
+				)
+			}
+		>
+			{ embedCodeForm }
+		</Placeholder>
+	);
+
+	const blockPreview = (
 		<>
 			<div className={ `${ className }-overlay` }></div>
 			<iframe
@@ -197,8 +202,8 @@ export default function OpentableEdit( {
 
 	return (
 		<div className={ editClasses }>
-			{ rid && inspectorControls() }
-			{ rid ? inspectorControls() && renderPreview() : renderPlaceholder() }
+			{ rid && inspectorControls }
+			{ rid ? blockPreview : blockPlaceholder }
 		</div>
 	);
 }
