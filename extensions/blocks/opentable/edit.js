@@ -2,6 +2,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { compact, isEmpty, join } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -15,7 +16,6 @@ import {
 	Placeholder,
 	SelectControl,
 	TextareaControl,
-	TextControl,
 	ToggleControl,
 	Toolbar,
 } from '@wordpress/components';
@@ -28,6 +28,7 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
  */
 import './editor.scss';
 import icon from './icon';
+import RestaurantPicker from './restaurant-picker';
 
 export default function OpentableEdit( {
 	attributes: { rid, style, iframe, domain, lang, newtab },
@@ -85,7 +86,7 @@ export default function OpentableEdit( {
 		}
 
 		setAttributes( {
-			rid: searchParams.get( 'rid' ),
+			rid: searchParams.getAll( 'rid' ),
 			iframe: Boolean( searchParams.get( 'iframe' ) ),
 			domain: searchParams.get( 'domain' ),
 			lang: searchParams.get( 'lang' ),
@@ -96,12 +97,12 @@ export default function OpentableEdit( {
 
 	const optionValues = options => options.map( option => option.value );
 
-	const styleOptions = [
+	const styleOptions = compact( [
 		{ value: 'standard', label: __( 'Standard (224 x 301 pixels)', 'jetpack' ) },
 		{ value: 'tall', label: __( 'Tall (288 x 490 pixels)', 'jetpack' ) },
 		{ value: 'wide', label: __( 'Wide (840 x 350 pixels)', 'jetpack' ) },
-		{ value: 'button', label: __( 'Button (210 x 113 pixels)', 'jetpack' ) },
-	];
+		rid.length <= 1 && { value: 'button', label: __( 'Button (210 x 113 pixels)', 'jetpack' ) },
+	] );
 	const styleValues = optionValues( styleOptions );
 
 	const languageOptions = [
@@ -141,18 +142,25 @@ export default function OpentableEdit( {
 		setAttributes( { style: newStyle } );
 	};
 
+	const getTypeAndTheme = fromStyle =>
+		rid.length > 1
+			? [ 'multi', 'button' !== fromStyle ? fromStyle : 'standard' ]
+			: [
+					'button' === fromStyle ? 'button' : 'standard',
+					'button' === fromStyle ? 'standard' : fromStyle,
+			  ];
+
 	const blockPreview = styleOveride => {
-		const computedStyle = styleOveride ? styleOveride : style;
+		const [ type, theme ] = getTypeAndTheme( styleOveride ? styleOveride : style );
 		return (
 			<>
 				<div className={ `${ className }-overlay` }></div>
 				<iframe
 					title={ `Open Table Preview ${ clientId }` }
-					src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ rid }&type=${
-						'button' === computedStyle ? 'button' : 'standard'
-					}&theme=${
-						'button' === computedStyle ? 'standard' : computedStyle
-					}&overlay=false&domain=${ domain }&lang=${
+					src={ `https://www.opentable.com/widget/reservation/canvas?rid=${ join(
+						rid,
+						'%2C'
+					) }&type=${ type }&theme=${ theme }&overlay=false&domain=${ domain }&lang=${
 						lang && languageValues.includes( lang ) ? lang : 'en-US'
 					}&newtab=${ newtab }&disablega=true` }
 				/>
@@ -162,7 +170,7 @@ export default function OpentableEdit( {
 
 	const blockControls = (
 		<BlockControls>
-			{ rid && (
+			{ ! isEmpty( rid ) && (
 				<Toolbar
 					isCollapsed={ true }
 					icon="edit"
@@ -177,7 +185,19 @@ export default function OpentableEdit( {
 		</BlockControls>
 	);
 
-	const inspectorControls = (
+	const restaurantPicker = (
+		<RestaurantPicker
+			onChange={ newRids =>
+				setAttributes( {
+					rid: newRids,
+					style: newRids.length > 1 && 'button' === style ? 'standard' : style,
+				} )
+			}
+			rids={ rid }
+		/>
+	);
+
+	const inspectorControls = () => (
 		<InspectorControls>
 			<PanelBody title={ __( 'Styles', 'jetpack' ) }>
 				<div className="block-editor-block-styles">
@@ -209,12 +229,7 @@ export default function OpentableEdit( {
 				</div>
 			</PanelBody>
 			<PanelBody title={ __( 'Settings', 'jetpack' ) }>
-				<TextControl
-					label={ __( 'Restaurant ID' ) }
-					type="text"
-					value={ rid }
-					onChange={ newRid => setAttributes( { rid: newRid } ) }
-				/>
+				{ restaurantPicker }
 				<ToggleControl
 					label={ __( 'Load the widget in an iFrame (Recommended)' ) }
 					checked={ iframe }
@@ -250,6 +265,7 @@ export default function OpentableEdit( {
 				)
 			}
 		>
+			{ restaurantPicker }
 			{ embedCodeForm }
 		</Placeholder>
 	);
@@ -260,13 +276,13 @@ export default function OpentableEdit( {
 
 	return (
 		<div className={ editClasses }>
-			{ rid && (
+			{ ! isEmpty( rid ) && (
 				<>
-					{ inspectorControls }
+					{ inspectorControls() }
 					{ blockControls }
 				</>
 			) }
-			{ rid ? blockPreview() : blockPlaceholder }
+			{ ! isEmpty( rid ) ? blockPreview() : blockPlaceholder }
 		</div>
 	);
 }

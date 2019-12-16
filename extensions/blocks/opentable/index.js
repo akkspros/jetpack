@@ -37,8 +37,8 @@ export const settings = {
 
 	attributes: {
 		rid: {
-			default: '',
-			type: 'string',
+			default: [],
+			type: 'array',
 		},
 		style: {
 			default: 'standard',
