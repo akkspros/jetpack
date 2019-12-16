@@ -37,22 +37,39 @@ export const settings = {
 
 	attributes: {
 		rid: {
+			default: '',
 			type: 'string',
 		},
 		style: {
+			default: 'standard',
 			type: 'string',
 		},
 		iframe: {
+			default: true,
 			type: 'boolean',
 		},
 		domain: {
+			default: 'com',
 			type: 'string',
 		},
 		lang: {
+			default: 'en-US',
 			type: 'string',
 		},
 		newtab: {
+			default: false,
 			type: 'boolean',
+		},
+	},
+
+	example: {
+		attributes: {
+			rid: '1',
+			style: 'standard',
+			iframe: true,
+			domain: 'com',
+			lang: 'en-US',
+			newtab: false,
 		},
 	},
 };
