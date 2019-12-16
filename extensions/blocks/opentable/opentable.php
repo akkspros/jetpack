@@ -64,22 +64,76 @@ function jetpack_opentable_block_load_assets( $attributes ) {
 }
 
 /**
- * Build an embed URL from an array of URL values.
+ * Get the a block attribute
  *
- * @param array $attributes Array of URL values.
+ * @param array $attributes Array of block attributes.
+ * @param array $attribute_name The attribute to get.
+ *
+ * @return string The filtered attribute
+ */
+function jetpack_opentable_block_get_attribute( $attributes, $attribute_name ) {
+	if ( isset( $attributes[ $attribute_name ] ) ) {
+		return wp_kses( $attributes[ $attribute_name ], array() );
+	}
+
+	$default_attributes = array(
+		'style'  => 'standard',
+		'iframe' => true,
+		'domain' => 'com',
+		'lang'   => 'en-US',
+		'newtab' => false,
+	);
+
+	return $default_attributes[ $attribute_name ];
+}
+
+/**
+ * Get the block type attribute
+ *
+ * @param array $attributes Array of block attributes.
+ *
+ * @return string The filtered attribute
+ */
+function jetpack_opentable_block_get_type_attribute( $attributes ) {
+	if ( 'button' === $attributes['style'] ) {
+		return 'button';
+	}
+
+	return 'standard';
+}
+
+/**
+ * Get the block theme attribute
+ *
+ * @param array $attributes Array of block attributes.
+ *
+ * @return string The filtered attribute
+ */
+function jetpack_opentable_block_get_theme_attribute( $attributes ) {
+	if ( 'button' === $attributes['style'] ) {
+		return 'standard';
+	}
+
+	return wp_kses( $attributes['style'], array() );
+}
+
+/**
+ * Build an embed URL from an array of block attributes.
+ *
+ * @param array $attributes Array of block attributess.
  *
  * @return string Embed URL
  */
 function jetpack_opentable_build_embed_url( $attributes ) {
 	return add_query_arg(
 		array(
-			'rid'    => $attributes['rid'],
-			'type'   => $attributes['type'],
-			'theme'  => $attributes['theme'],
-			'iframe' => $attributes['iframe'],
-			'domain' => $attributes['domain'],
-			'lang'   => $attributes['lang'],
-			'newtab' => $attributes['newtab'],
+			'rid'    => jetpack_opentable_block_get_attribute( $attributes, 'rid' ),
+			'type'   => jetpack_opentable_block_get_type_attribute( $attributes ),
+			'theme'  => jetpack_opentable_block_get_theme_attribute( $attributes ),
+			'iframe' => jetpack_opentable_block_get_attribute( $attributes, 'iframe' ),
+			'domain' => jetpack_opentable_block_get_attribute( $attributes, 'domain' ),
+			'lang'   => jetpack_opentable_block_get_attribute( $attributes, 'lang' ),
+			'newtab' => jetpack_opentable_block_get_attribute( $attributes, 'newtab' ),
 		),
 		'//www.opentable.com/widget/reservation/loader'
 	);
